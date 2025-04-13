@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>吐槽机 - 情绪宣泄平台</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;500;600&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=SF+Pro+Text:wght@400;500&display=swap">
+    <!-- 添加苹果风格图标库 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sf-symbols@1.0.0/dist/sf-symbols.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 登录注册界面 -->
+        <div id="auth-container" class="auth-container">
+            <div class="auth-card">
+                <div class="logo-container">
+                    <div class="logo">
+                        <span class="sf-symbol">bubble.left.and.bubble.right.fill</span>
+                    </div>
+                    <h1>吐槽机</h1>
+                    <p class="tagline">你的专属情绪宣泄空间</p>
+                </div>
+                
+                <div class="tab-container">
+                    <button class="tab-button active" id="login-tab">登录</button>
+                    <button class="tab-button" id="register-tab">注册</button>
+                </div>
+                
+                <!-- 登录表单 -->
+                <div id="login-form" class="auth-form active">
+                    <div class="form-group">
+                        <label for="login-username">用户名</label>
+                        <input type="text" id="login-username" placeholder="请输入用户名" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">密码</label>
+                        <input type="password" id="login-password" placeholder="请输入密码" class="form-control">
+                    </div>
+                    <div class="form-group remember-me">
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="remember-me">
+                            <span class="checkmark"></span>
+                            记住我
+                        </label>
+                    </div>
+                    <button class="primary-button" id="login-button">登录</button>
+                </div>
+                
+                <!-- 注册表单 -->
+                <div id="register-form" class="auth-form">
+                    <div class="form-group">
+                        <label for="register-username">用户名</label>
+                        <input type="text" id="register-username" placeholder="设置一个用户名" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="register-password">密码</label>
+                        <input type="password" id="register-password" placeholder="设置密码" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="register-confirm-password">确认密码</label>
+                        <input type="password" id="register-confirm-password" placeholder="再次输入密码" class="form-control">
+                    </div>
+                    <button class="primary-button" id="register-button">注册</button>
+                </div>
+                
+                <p class="privacy-notice">
+                    注册即表示您同意我们的<a href="#" class="text-link">隐私条款</a>
+                </p>
+            </div>
+        </div>
+
+        <!-- 主对话界面 -->
+        <div id="chat-container" class="chat-container hidden">
+            <div class="chat-header">
+                <div class="user-info">
+                    <span class="sf-symbol">person.circle.fill</span>
+                    <span id="username-display">用户</span>
+                </div>
+                <!-- 输入状态指示器 -->
+                <div id="typing-status" class="typing-status hidden">
+                    <div class="typing-indicator-wrapper">
+                        <span>小吐正在输入</span>
+                        <div class="typing-dots">
+                            <span></span><span></span><span></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <button id="settings-button" class="icon-button">
+                        <span class="sf-symbol">gear</span>
+                    </button>
+                    <button id="logout-button" class="icon-button">
+                        <span class="sf-symbol">arrow.right.square</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="chat-messages" id="chat-messages">
+                <div class="message-date-divider">今天</div>
+                <div class="message ai-message">
+                    <div class="message-bubble">
+                        嗨！今天有什么想吐槽的吗？我是你的AI闺蜜，随时准备倾听你的心声~
+                    </div>
+                    <div class="message-time">10:00</div>
+                </div>
+                <!-- 消息内容将动态添加在这里 -->
+            </div>
+            
+            <div class="chat-input">
+                <textarea id="message-input" placeholder="告诉我你的心情..."></textarea>
+                <button id="send-button" class="icon-button send-button">
+                    <span class="sf-symbol">arrow.up.circle.fill</span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- 设置界面 -->
+        <div id="settings-container" class="settings-container hidden">
+            <div class="settings-header">
+                <button id="back-button" class="icon-button">
+                    <span class="sf-symbol">chevron.left</span>
+                </button>
+                <h2>设置</h2>
+            </div>
+            
+            <div class="settings-content">
+                <div class="settings-section">
+                    <h3>账户设置</h3>
+                    <div class="settings-item" id="change-username-item">
+                        <span class="settings-item-label">更改用户名</span>
+                        <span class="sf-symbol chevron">chevron.right</span>
+                    </div>
+                    <div class="settings-item" id="change-password-item">
+                        <span class="settings-item-label">修改密码</span>
+                        <span class="sf-symbol chevron">chevron.right</span>
+                    </div>
+                </div>
+                
+                <div class="settings-section">
+                    <h3>隐私设置</h3>
+                    <div class="settings-item toggle">
+                        <span class="settings-item-label">自动清除历史记录</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="auto-clear-history">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="settings-item toggle">
+                        <span class="settings-item-label">隐私模式</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="privacy-mode">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="settings-section">
+                    <h3>聊天记录</h3>
+                    <div class="settings-item" id="view-history-item">
+                        <span class="settings-item-label">查看历史记录</span>
+                        <span class="sf-symbol chevron">chevron.right</span>
+                    </div>
+                    <div class="settings-item danger">
+                        <span class="settings-item-label">清除所有历史记录</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 模态对话框 -->
+        <div id="modal-container" class="modal-container hidden">
+            <!-- 更改用户名模态框 -->
+            <div id="change-username-modal" class="modal-content hidden">
+                <div class="modal-header">
+                    <h3>更改用户名</h3>
+                    <button class="modal-close-btn">
+                        <span class="sf-symbol">xmark</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="new-username">新用户名</label>
+                        <input type="text" id="new-username" class="form-control" placeholder="输入新的用户名">
+                    </div>
+                    <button id="submit-username" class="primary-button">保存</button>
+                </div>
+            </div>
+
+            <!-- 修改密码模态框 -->
+            <div id="change-password-modal" class="modal-content hidden">
+                <div class="modal-header">
+                    <h3>修改密码</h3>
+                    <button class="modal-close-btn">
+                        <span class="sf-symbol">xmark</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="current-password">当前密码</label>
+                        <input type="password" id="current-password" class="form-control" placeholder="输入当前密码">
+                    </div>
+                    <div class="form-group">
+                        <label for="new-password">新密码</label>
+                        <input type="password" id="new-password" class="form-control" placeholder="输入新密码">
+                    </div>
+                    <div class="form-group">
+                        <label for="confirm-new-password">确认新密码</label>
+                        <input type="password" id="confirm-new-password" class="form-control" placeholder="再次输入新密码">
+                    </div>
+                    <button id="submit-password" class="primary-button">保存</button>
+                </div>
+            </div>
+
+            <!-- 查看历史记录模态框 -->
+            <div id="view-history-modal" class="modal-content hidden">
+                <div class="modal-header">
+                    <h3>聊天历史记录</h3>
+                    <button class="modal-close-btn">
+                        <span class="sf-symbol">xmark</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="history-list" class="history-list">
+                        <!-- 历史记录会动态添加在这里 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/chat.js"></script>
+    <script src="js/settings.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
