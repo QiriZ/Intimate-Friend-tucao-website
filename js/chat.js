@@ -385,6 +385,13 @@ async function fetchAIReply(message) {
     
     // 准备请求数据
     const apiKey = AppConfig.api.getApiKey();
+    
+    // 如果API密钥为空，显示错误信息
+    if (!apiKey) {
+        console.error('API密钥未找到');
+        return '抱歉，系统配置有问题，请联系管理员。';
+    }
+    
     const requestData = {
         model: AppConfig.api.model,
         messages: [
@@ -413,21 +420,61 @@ async function fetchAIReply(message) {
     };
 
     try {
-        // 发送API请求
-        const response = await fetch(AppConfig.api.endpoint, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${apiKey}`
-            },
-            body: JSON.stringify(requestData)
-        });
+        console.log('准备发送API请求...');
+        
+        let data;
+        
+        // 检测当前环境是否为GitHub Pages
+        const isGitHubPages = window.location.hostname.includes('github.io');
+        
+        if (isGitHubPages) {
+            // 在GitHub Pages上使用代理
+            console.log('检测到GitHub Pages环境，使用API代理...');
+            
+            // 确保代理已初始化
+            if (!window.apiProxy.isReady) {
+                await window.apiProxy.init();
+            }
+            
+            // 通过代理发送请求
+            data = await window.apiProxy.sendRequest(
+                AppConfig.api.endpoint,
+                apiKey,
+                requestData
+            );
+            
+            console.log('通过代理获取API响应:', data);
+        } else {
+            // 本地环境直接发送请求
+            console.log('本地环境，直接发送API请求到:', AppConfig.api.endpoint);
+            
+            // 发送API请求
+            const response = await fetch(AppConfig.api.endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${apiKey}`
+                },
+                body: JSON.stringify(requestData)
+            });
+            
+            console.log('API响应状态:', response.status);
+            
+            if (!response.ok) {
+                let errorText = await response.text();
+                console.error('API错误响应:', errorText);
+                throw new Error(`API错误 (${response.status}): ${errorText}`);
+            }
 
-        if (!response.ok) {
-            throw new Error(`API错误: ${response.status}`);
+            data = await response.json();
+            console.log('API响应成功:', data);
         }
-
-        const data = await response.json();
+        
+        if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+            console.error('API响应格式异常:', data);
+            throw new Error('API响应格式异常');
+        }
+        
         const aiReply = data.choices[0].message.content;
         
         // 将AI回复添加到聊天历史
@@ -436,7 +483,7 @@ async function fetchAIReply(message) {
         return aiReply;
     } catch (error) {
         console.error('调用AI API出错:', error);
-        return '抱歉，我现在无法回复你的消息，请稍后再试。';
+        return `抱歉，我现在无法回复你的消息，请稍后再试。错误: ${error.message}`;
     }
 }
 
